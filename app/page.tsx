@@ -1,13 +1,43 @@
-/**
- * 
- * @TODO 
- * 
- * 1. create a table in our database to store embeddings
- * 2. add logic to chunk and create embeddings when creating resources
- * 3. create an agent
- * 4. give the agent tools to query / create resources for it's knolwedgbase
- */
+'use client';
+
+import { useChat } from '@ai-sdk/react';
+import { useState } from 'react';
 
 export default function Chat() {
-  return <main>Hello, world!</main>;
+  const [input, setInput] = useState('');
+  const { messages, sendMessage } = useChat();
+  return (
+    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
+      <div className="space-y-4">
+        {messages.map(m => (
+          <div key={m.id} className="whitespace-pre-wrap">
+            <div>
+              <div className="font-bold">{m.role}</div>
+              {m.parts.map(part => {
+                switch (part.type) {
+                  case 'text':
+                    return <p>{part.text}</p>;
+                }
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          sendMessage({ text: input });
+          setInput('');
+        }}
+      >
+        <input
+          className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
+          value={input}
+          placeholder="Say something..."
+          onChange={e => setInput(e.currentTarget.value)}
+        />
+      </form>
+    </div>
+  );
 }
